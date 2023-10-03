@@ -9,8 +9,10 @@ import {
 } from 'react-bootstrap';
 
 import Auth from '../utils/auth';
-import { saveBook, searchGoogleBooks } from '../utils/API';
+// import { saveBook, searchGoogleBooks } from '../utils/API';
 import { saveBookIds, getSavedBookIds } from '../utils/localStorage';
+import { useMutation } from '@apollo/client';
+import { SAVE_BOOK } from '../utils/mutations'
 
 const SearchBooks = () => {
   // create state for holding returned google api data
@@ -19,6 +21,7 @@ const SearchBooks = () => {
   const [searchInput, setSearchInput] = useState('');
 
   // create state to hold saved bookId values
+  const [saveBook, { error }] = useMutation(SAVE_BOOK);
   const [savedBookIds, setSavedBookIds] = useState(getSavedBookIds());
 
   // set up useEffect hook to save `savedBookIds` list to localStorage on component unmount
@@ -72,7 +75,10 @@ const SearchBooks = () => {
     }
 
     try {
-      const response = await saveBook(bookToSave, token);
+      // const response = await saveBook(bookToSave, token);
+      const { data } = await saveBook({
+        variables: { newSavedBook: { ...bookToSave}}
+      })
 
       if (!response.ok) {
         throw new Error('something went wrong!');
